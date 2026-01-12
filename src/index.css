@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;500;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: #030303;
+    color: #e0e0e0;
+    overflow: hidden;
+}
+
+/* Custom Scrollbar Cyberpunk */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #050505; 
+}
+::-webkit-scrollbar-thumb {
+    background: #00f3ff; 
+    border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #bc13fe; 
+    box-shadow: 0 0 10px #bc13fe;
+}
+
+/* CRT SCANLINE EFFECT OVERLAY */
+.crt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 2px, 3px 100%;
+    z-index: 9999;
+    pointer-events: none; /* Klik tembus ke bawah */
+}
+
+/* TEXT GLOW UTILITY */
+.text-glow {
+    text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
+}
+
+/* CLIP PATH CORNERS (Sudut terpotong futuristik) */
+.clip-corner {
+    clip-path: polygon(
+        10px 0, 100% 0, 
+        100% calc(100% - 10px), calc(100% - 10px) 100%, 
+        0 100%, 0 10px
+    );
+}
+
+/* HOVER GLITCH TEXT EFFECT */
+.hover-glitch:hover {
+    animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+    color: #ff003c;
+    text-shadow: 2px 2px #00f3ff;
+}
