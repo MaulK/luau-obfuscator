@@ -276,8 +276,15 @@ _exec(${varFunc}())()`;
         <div className="border-t border-neon-blue/30 p-2 bg-black flex justify-between items-center text-[9px] uppercase tracking-widest text-gray-600 shrink-0">
             <div>MEM_USAGE: 24MB // SECURE_CONNECTION</div>
             <div className="flex gap-4">
-                <span className="hover:text-neon-blue cursor-pointer">GITHUB_REPO</span>
-                <span className="hover:text-neon-pink cursor-pointer">DISCORD_SERVER</span>
+                {/* Link GitHub */}
+                <a 
+                    href="https://github.com/MaulK/luau-obfuscator" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-neon-blue cursor-pointer transition-colors"
+                >
+                    GITHUB_REPO
+                </a>
             </div>
         </div>
       </div>
