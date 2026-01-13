@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 // --- HELPER FUNCTIONS ---
 const randomString = (length = 8) => {
@@ -11,9 +11,9 @@ const randomString = (length = 8) => {
 };
 
 const randomVar = () => {
-  const prefix = ["_VOID", "MEM", "HEX", "CYPHER", "NULL", "ROOT"];
+  const prefix = ["_VOID", "MEM", "HEX", "CYPHER", "NULL", "ROOT", "STACK"];
   const randPre = prefix[Math.floor(Math.random() * prefix.length)];
-  return randPre + "_0x" + Math.floor(Math.random() * 9999).toString(16).toUpperCase();
+  return randPre + "_0x" + Math.floor(Math.random() * 99999).toString(16).toUpperCase();
 };
 
 function App() {
@@ -23,81 +23,134 @@ function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [copyStatus, setCopyStatus] = useState("COPY DATA");
   const [statusMsg, setStatusMsg] = useState("SYSTEM_READY");
+  
+  // State untuk Real-Time Memory Usage
+  const [memUsage, setMemUsage] = useState("CALCULATING...");
 
   // --- REFS ---
   const fileInputRef = useRef(null);
 
+  // --- EFFECT: REAL TIME MEMORY MONITOR ---
+  useEffect(() => {
+    const updateMemory = () => {
+      // Cek apakah browser mendukung API memory (Chrome/Edge support)
+      if (window.performance && window.performance.memory) {
+        const usedBytes = window.performance.memory.usedJSHeapSize;
+        const totalBytes = window.performance.memory.totalJSHeapSize;
+        
+        // Konversi ke MB dengan 1 desimal
+        const usedMB = (usedBytes / (1024 * 1024)).toFixed(1);
+        const totalMB = (totalBytes / (1024 * 1024)).toFixed(0);
+        
+        setMemUsage(`HEAP: ${usedMB}MB / ${totalMB}MB`);
+      } else {
+        // Fallback untuk Firefox/Safari yang memblokir API ini
+        setMemUsage("MEM: SYSTEM_OPTIMIZED");
+      }
+    };
+
+    // Jalankan pertama kali
+    updateMemory();
+
+    // Update setiap 2 detik agar tidak memberatkan performa
+    const interval = setInterval(updateMemory, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   // --- HANDLERS ---
 
-  // 1. Obfuscate Logic
+  // 1. ADVANCED OBFUSCATION LOGIC (V5)
   const handleObfuscate = () => {
     if (!inputText.trim()) return;
 
     setIsProcessing(true);
-    setStatusMsg("ENCRYPTING_SEQUENCE_INITIATED...");
+    setStatusMsg("COMPRESSING & ENCRYPTING...");
     
-    // Efek visual 'Hacking' di output box sebelum hasil muncul
     let steps = 0;
     const interval = setInterval(() => {
-        setOutputText(prev => prev + randomString(50) + "\n");
+        setOutputText(prev => prev + randomString(64) + "\n");
         steps++;
-        if(steps > 15) clearInterval(interval);
-    }, 50);
+        if(steps > 20) clearInterval(interval);
+    }, 40);
 
     setTimeout(() => {
       clearInterval(interval);
-      const keyString = randomString(32);
-      const varData = randomVar();
-      const varKey = randomVar();
-      const varIdx = randomVar();
-      const varRes = randomVar();
-      const varFunc = randomVar();
-      const varBit = randomVar();
+      
+      const key1 = Math.floor(Math.random() * 255);
+      const key2 = Math.floor(Math.random() * 255);
+      const keyString = randomString(32); 
+      
+      const v_data = randomVar();    
+      const v_keyStr = randomVar();  
+      const v_idx = randomVar();     
+      const v_res = randomVar();     
+      const v_func = randomVar();    
+      const v_byte = randomVar();    
+      const v_char = randomVar();    
+      const v_concat = randomVar();  
+      const v_xor = randomVar();     
+      const v_bit = randomVar();
 
-      let encryptedBytes = [];
+      let encryptedString = "";
+      
       for (let i = 0; i < inputText.length; i++) {
         const charCode = inputText.charCodeAt(i);
-        const keyChar = keyString.charCodeAt(i % keyString.length);
-        // Poly-XOR + Salt Logic
-        let encrypted = (charCode ^ keyChar) + (i % 7);
-        encryptedBytes.push(encrypted);
+        const polyKey = keyString.charCodeAt(i % keyString.length);
+        let step1 = charCode ^ polyKey;
+        let step2 = (step1 + i + key1) % 256;
+        let finalByte = step2 ^ key2;
+        encryptedString += "\\" + finalByte.toString().padStart(3, '0');
       }
 
-      const tableString = "{" + encryptedBytes.join(",") + "}";
-
-      // Payload Lua
       const payload = `--[[ 
-    // PROTOCOL: VOID_RUNNER //
-    // SECURE_HASH: ${randomString(16)}
-    // TIMESTAMP: ${new Date().toISOString()}
+    // PROTOCOL: VOID_RUNNER // CORE: V5_STABLE
+    // TARGET: ROBLOX LUAU
+    // SECURITY: POLY_XOR + COMPRESSION
 ]]
 
-local ${varData} = ${tableString}
-local ${varKey} = "${keyString}"
-local ${varBit} = bit32 or require('bit')
+local ${v_data} = "${encryptedString}"
+local ${v_keyStr} = "${keyString}"
 
-local function ${varFunc}()
-    local ${varRes} = {}
-    for ${varIdx} = 1, #${varData} do
-        local _b = ${varData}[${varIdx}]
-        local _k = string.byte(${varKey}, (${varIdx} - 1) % #${varKey} + 1)
-        local _real = (_b - ((${varIdx} - 1) % 7))
-        local _dec = ${varBit}.bxor(_real, _k)
-        table.insert(${varRes}, string.char(_dec))
+-- [OPTIMIZATION] Upvalue Caching
+local ${v_byte} = string.byte
+local ${v_char} = string.char
+local ${v_concat} = table.concat
+
+-- [COMPATIBILITY] Robust Bitwise XOR for Roblox
+local ${v_bit} = bit32 or require('bit')
+local ${v_xor} = ${v_bit}.bxor
+
+local function ${v_func}()
+    local ${v_res} = {}
+    local _len = #${v_data}
+    local _kLen = #${v_keyStr}
+    
+    for ${v_idx} = 1, _len do
+        local _b = ${v_byte}(${v_data}, ${v_idx})
+        local _pk = ${v_byte}(${v_keyStr}, (${v_idx} - 1) % _kLen + 1)
+        
+        -- Decryption Logic
+        local _s1 = ${v_xor}(_b, ${key2})
+        local _s2 = (_s1 - (${v_idx} - 1) - ${key1}) % 256
+        if _s2 < 0 then _s2 = _s2 + 256 end
+        local _final = ${v_xor}(_s2, _pk)
+        
+        ${v_res}[${v_idx}] = ${v_char}(_final)
     end
-    return table.concat(${varRes})
+    
+    return ${v_concat}(${v_res})
 end
 
 local _exec = loadstring or load
-_exec(${varFunc}())()`;
+_exec(${v_func}())()`;
 
       setOutputText(payload);
       setIsProcessing(false);
-      setStatusMsg("ENCRYPTION_COMPLETE // SECURE");
-    }, 1500);
+      setStatusMsg("OPTIMIZED_BUILD // ROBLOX_READY");
+    }, 1200);
   };
 
-  // 2. Upload File
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -110,7 +163,6 @@ _exec(${varFunc}())()`;
     e.target.value = null;
   };
 
-  // 3. Download File
   const handleDownload = () => {
     if (!outputText) return;
     const blob = new Blob([outputText], { type: 'text/plain' });
@@ -124,7 +176,6 @@ _exec(${varFunc}())()`;
     URL.revokeObjectURL(url);
   };
 
-  // 4. Copy Text
   const handleCopy = () => {
     if (!outputText) return;
     navigator.clipboard.writeText(outputText);
@@ -132,7 +183,6 @@ _exec(${varFunc}())()`;
     setTimeout(() => setCopyStatus("COPY DATA"), 1500);
   };
 
-  // 5. Clear All
   const handleClear = () => {
     setInputText("");
     setOutputText("");
@@ -142,20 +192,16 @@ _exec(${varFunc}())()`;
   return (
     <div className="relative min-h-screen bg-void text-neon-blue font-mono selection:bg-neon-pink selection:text-white flex items-center justify-center p-2 sm:p-6 overflow-hidden">
       
-      {/* CRT SCANLINE OVERLAY */}
       <div className="crt-overlay"></div>
       
-      {/* BACKGROUND GRID DECORATION */}
       <div className="fixed inset-0 grid grid-cols-[repeat(20,1fr)] opacity-10 pointer-events-none">
         {[...Array(20)].map((_, i) => (
             <div key={i} className="border-r border-neon-blue h-full"></div>
         ))}
       </div>
 
-      {/* MAIN FRAME - HUD STYLE */}
       <div className="relative w-full max-w-6xl border-2 border-neon-blue bg-void/90 z-10 clip-corner shadow-[0_0_50px_rgba(0,243,255,0.1)] flex flex-col h-[90vh] sm:h-auto">
         
-        {/* CORNER DECORATIONS */}
         <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-neon-pink -translate-x-1 -translate-y-1"></div>
         <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-neon-pink translate-x-1 translate-y-1"></div>
 
@@ -175,7 +221,7 @@ _exec(${varFunc}())()`;
           
           <div className="text-right hidden sm:block">
             <div className="text-xs text-neon-pink font-bold animate-pulse">STATUS: {isProcessing ? 'PROCESSING' : 'ONLINE'}</div>
-            <div className="text-[10px] text-neon-blue/50">V3.0.1 // BUILD_REACT</div>
+            <div className="text-[10px] text-neon-blue/50">V1.5 // STABLE VERSION</div>
           </div>
         </div>
 
@@ -184,7 +230,6 @@ _exec(${varFunc}())()`;
             
             {/* LEFT: INPUT */}
             <div className="flex-1 p-4 flex flex-col border-b lg:border-b-0 lg:border-r border-neon-blue/30 relative min-h-[300px]">
-                {/* DECORATIVE LINE */}
                 <div className="absolute top-10 right-0 w-2 h-20 bg-neon-blue hidden lg:block"></div>
 
                 <div className="flex justify-between items-end mb-2 shrink-0">
@@ -234,7 +279,6 @@ _exec(${varFunc}())()`;
                 </div>
 
                 <div className="flex-1 bg-panel border border-neon-pink/20 p-1 relative overflow-hidden">
-                    {/* Visual Glitch BG */}
                     <div className="absolute inset-0 opacity-5 pointer-events-none bg-repeat space-y-2">
                         {[...Array(10)].map((_, i) => <div key={i} className="h-px w-full bg-white/20"></div>)}
                     </div>
@@ -247,7 +291,7 @@ _exec(${varFunc}())()`;
                     />
                 </div>
 
-                {/* ACTION BAR (Updated for High Visibility Delete) */}
+                {/* ACTION BAR */}
                 <div className="mt-4 flex gap-3 h-10 items-stretch shrink-0">
                     <button onClick={handleDownload} className="flex-1 border border-neon-blue bg-neon-blue/5 hover:bg-neon-blue hover:text-black transition-all text-xs font-bold uppercase flex items-center justify-center gap-2 group clip-corner">
                         <i className="fa-solid fa-download group-hover:animate-bounce"></i> <span className="hidden sm:inline">SAVE_LUA</span>
@@ -257,33 +301,29 @@ _exec(${varFunc}())()`;
                         <i className={copyStatus === 'COPIED!' ? "fa-solid fa-check" : "fa-regular fa-copy"}></i> {copyStatus}
                     </button>
 
-                    {/* --- TOMBOL HAPUS BARU (SOLID & GLOWING) --- */}
                     <button 
                         onClick={handleClear} 
-                        // Perubahan ada di sini: 'text-black' diganti menjadi 'text-white'
                         className="w-20 bg-neon-pink text-white border-2 border-neon-pink hover:bg-black hover:text-neon-pink hover:shadow-[0_0_35px_#ff003c] transition-all duration-300 text-sm font-bold uppercase clip-corner flex items-center justify-center shadow-[0_0_15px_#ff003c] group relative overflow-hidden"
                         title="EMERGENCY PURGE"
                     >
                         <div className="absolute inset-0 bg-white/50 translate-y-full group-hover:translate-y-0 transition-transform duration-300 mix-blend-overlay"></div>
-                        {/* Ikon ini sekarang akan berwarna putih karena induknya memiliki class text-white */}
                         <i className="fa-solid fa-trash-can group-hover:animate-pulse z-10"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        {/* --- FOOTER --- */}
+        {/* --- FOOTER (UPDATED REAL-TIME MEMORY) --- */}
         <div className="border-t border-neon-blue/30 p-2 bg-black flex justify-between items-center text-[9px] uppercase tracking-widest text-gray-600 shrink-0">
-            <div>MEM_USAGE: 24MB // SECURE_CONNECTION</div>
+            {/* Bagian ini sekarang dinamis */}
+            <div>{memUsage} // SECURE_CONNECTION</div>
+            
             <div className="flex gap-4">
-                {/* Link GitHub */}
-                <a 
-                    href="https://github.com/MaulK/luau-obfuscator" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="hover:text-neon-blue cursor-pointer transition-colors"
-                >
+                <a href="https://github.com/MaulanaKhoirusyifa" target="_blank" rel="noopener noreferrer" className="hover:text-neon-blue cursor-pointer transition-colors">
                     GITHUB_REPO
+                </a>
+                <a href="https://discord.gg/yourinvite" target="_blank" rel="noopener noreferrer" className="hover:text-neon-pink cursor-pointer transition-colors">
+                    DISCORD
                 </a>
             </div>
         </div>

@@ -4,13 +4,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* --- BASE STYLES --- */
 body {
     background-color: #030303;
     color: #e0e0e0;
     overflow: hidden;
 }
 
-/* Custom Scrollbar Cyberpunk */
+/* --- SCROLLBAR --- */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -27,7 +28,52 @@ body {
     box-shadow: 0 0 10px #bc13fe;
 }
 
-/* CRT SCANLINE EFFECT OVERLAY */
+/* --- CUSTOM CURSOR SYSTEM --- */
+
+/* 1. GLOBAL DEFAULT: Panah Void (Cyan Outline) */
+/* Kita terapkan ke seluruh elemen (*) agar konsisten menimpa settingan lain */
+html, body, div, span, h1, h2, p, i {
+    cursor: url('data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2l7.5 18.5 2.8-7.2 7.8-2.5L2 2z" fill="%23000000" stroke="%2300f3ff" stroke-width="1.5" stroke-linejoin="round"/></svg>') 2 2, auto;
+}
+
+/* 2. INTERACTIVE/POINTER: Panah Void (Pink Outline) */
+/* Hanya untuk elemen yang bisa diklik */
+button, 
+a, 
+label,
+summary,
+input[type="file"], 
+input[type="checkbox"],
+input[type="radio"],
+select,
+.cursor-pointer, 
+.hover-glitch,
+/* Penting: Pastikan elemen di dalam button (ikon/teks) juga mewarisi pointer */
+button *, 
+a * {
+    cursor: url('data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2l7.5 18.5 2.8-7.2 7.8-2.5L2 2z" fill="%23000000" stroke="%23ff003c" stroke-width="1.5" stroke-linejoin="round"/></svg>') 2 2, pointer !important;
+}
+
+/* 3. TEXT EDITING: Void I-Beam (Cyan Neon) */
+/* PERBAIKAN: Hanya targetkan input dan textarea spesifik, JANGAN gunakan .font-mono */
+input[type="text"], 
+input[type="password"], 
+input[type="email"], 
+input[type="number"], 
+textarea {
+    cursor: url('data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4v16M8 4h8M8 20h8" stroke="%2300f3ff" stroke-width="2" stroke-linecap="square" filter="drop-shadow(0 0 2px %2300f3ff)"/></svg>') 16 16, text !important;
+    caret-color: #00f3ff; 
+}
+
+/* 4. SELECTION COLOR */
+::selection {
+    background: #ff003c; 
+    color: #ffffff;      
+    text-shadow: none;
+}
+
+/* --- VISUAL EFFECTS --- */
+
 .crt-overlay {
     position: fixed;
     top: 0;
@@ -37,15 +83,13 @@ body {
     background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
     background-size: 100% 2px, 3px 100%;
     z-index: 9999;
-    pointer-events: none; /* Klik tembus ke bawah */
+    pointer-events: none;
 }
 
-/* TEXT GLOW UTILITY */
 .text-glow {
     text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
 }
 
-/* CLIP PATH CORNERS (Sudut terpotong futuristik) */
 .clip-corner {
     clip-path: polygon(
         10px 0, 100% 0, 
@@ -54,7 +98,6 @@ body {
     );
 }
 
-/* HOVER GLITCH TEXT EFFECT */
 .hover-glitch:hover {
     animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
     color: #ff003c;
